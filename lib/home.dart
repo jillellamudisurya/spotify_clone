@@ -1,120 +1,90 @@
 import 'package:flutter/material.dart';
-import 'package:spotify_clone/widgets/Home/RecentPlaylists/recently_played.dart';
-import 'package:spotify_clone/widgets/Home/music_podcast_selection.dart';
-import 'package:spotify_clone/widgets/Home/recently_played_playlists.dart';
-import 'package:spotify_clone/widgets/Home/top_bar_profile.dart';
+import 'package:spotify_clone/constants/colors.dart';
+import 'package:spotify_clone/widgets/screens/home.dart';
+import 'package:spotify_clone/widgets/screens/library.dart';
+import 'package:spotify_clone/widgets/screens/search.dart';
 
-class SpotifyHome extends StatefulWidget {
-  const SpotifyHome({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<SpotifyHome> createState() => _SpotifyHomeState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _SpotifyHomeState extends State<SpotifyHome> {
+class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  List<Widget> widgetOptions = <Widget>[
-    Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        // crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          SpotifyHomeTopBar(),
-          MusicAndPodcastSelection(),
-          SizedBox(
-            height: 10,
-          ),
-          RecentlyPlayedMusicPlaylists(),
-          SizedBox(
-            height: 20,
-          ),
-          Text("Recently Played",
-          textAlign: TextAlign.start,
-          style: TextStyle(color: Colors.white,fontSize: 16,),),
-          RecentlyPlayed()
-        ],
-      ),
-    ),
-    const Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
-    const Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
-  ];
+  final PageController _pageController = PageController(
+    initialPage: 0,
+  );
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      _pageController.animateToPage(
+        _selectedIndex,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     });
   }
 
+  //Total Screens
+  final List<Widget> screens = const [
+    Home(),
+    Search(),
+    Library(),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black,
-      child: SafeArea(
-        child: Scaffold(
-          backgroundColor: Colors.black,
-          body: widgetOptions.elementAt(_selectedIndex),
-          bottomNavigationBar: BottomNavigationBar(
-            showUnselectedLabels: true,
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.home_outlined,
-                  color: Colors.white,
-                  size: 40,
-                ),
-                activeIcon: Icon(
-                  Icons.home,
-                  color: Colors.white,
-                  size: 40,
-                ),
-                label: 'Home',
-                tooltip: 'home',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.search,
-                  color: Colors.white,
-                  size: 40,
-                ),
-                activeIcon: Icon(
-                  Icons.pageview_rounded,
-                  color: Colors.white,
-                  size: 40,
-                ),
-                label: 'Search',
-                tooltip: 'search',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.library_books_outlined,
-                  color: Colors.white,
-                  size: 40,
-                ),
-                activeIcon: Icon(
-                  Icons.library_books,
-                  color: Colors.white,
-                  size: 40,
-                ),
-                label: 'Your Library',
-                tooltip: 'your library',
-              ),
-            ],
-            currentIndex: _selectedIndex,
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.white,
-            onTap: _onItemTapped,
-            selectedFontSize: 12,
-          ),
+    return WillPopScope(
+      onWillPop: () {
+        return Future.value(true);
+      },
+      child: Scaffold(
+        extendBody: true,
+        body: Stack(
+          children: [
+            PageView(
+              controller: _pageController,
+              children: screens,
+              onPageChanged: (index) {
+                setState(
+                  () {
+                    _selectedIndex = index;
+                  },
+                );
+              },
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          backgroundColor: SpotifyColors.transparentColor,
+          selectedFontSize: 14.0,
+          unselectedFontSize: 14.0,
+          selectedItemColor: SpotifyColors.whiteColor,
+          unselectedItemColor: SpotifyColors.whiteColor,
+          elevation: 0,
+          onTap: _onItemTapped,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              label: 'Search',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.library_music),
+              label: 'Library',
+            ),
+          ],
+        ),)
+          ],
         ),
       ),
     );
