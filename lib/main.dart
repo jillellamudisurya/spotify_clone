@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:spotify_clone/home.dart';
-import 'package:spotify_clone/testing/testing_home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,7 +8,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -18,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const SpotifyHome()
+      home: const HomePage(),
     );
   }
 }
